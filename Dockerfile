@@ -6,7 +6,7 @@ WORKDIR /opt
 RUN usermod -u 99 nobody
 
 # Make directories
-RUN mkdir -p /downloads /config/qBittorrent /etc/openvpn /etc/qbittorrent
+RUN mkdir -p /content /config/qBittorrent /etc/openvpn /etc/qbittorrent
 
 # Install boost
 RUN apt update \
@@ -212,7 +212,7 @@ RUN echo "deb http://deb.debian.org/debian/ bullseye non-free" > /etc/apt/source
 # Remove src_valid_mark from wg-quick
 RUN sed -i /net\.ipv4\.conf\.all\.src_valid_mark/d `which wg-quick`
 
-VOLUME /config /downloads
+VOLUME /config /content
 
 ADD openvpn/ /etc/openvpn/
 ADD qbittorrent/ /etc/qbittorrent/
