@@ -83,8 +83,8 @@ iptable_mangle_exit_code=$?
 if [[ $iptable_mangle_exit_code == 0 ]]; then
 	echo "[INFO] iptable_mangle support detected, adding fwmark for tables" | ts '%Y-%m-%d %H:%M:%.S'
 
-	# setup route for qBittorrent webui using set-mark to route traffic for port 8080 and 8999 to "${docker_interface}"
-	echo "8080    webui" >> /etc/iproute2/rt_tables
+	# setup route for qBittorrent webui using set-mark to route traffic for port 8081 and 8999 to "${docker_interface}"
+	echo "8081    webui" >> /etc/iproute2/rt_tables
 	echo "8999    webui" >> /etc/iproute2/rt_tables
 	ip rule add fwmark 1 table webui
 	ip route add default via ${DEFAULT_GATEWAY} table webui
@@ -109,8 +109,8 @@ iptables -A INPUT -s "${docker_network_cidr}" -d "${docker_network_cidr}" -j ACC
 iptables -A INPUT -i "${docker_interface}" -p $VPN_PROTOCOL --sport $VPN_PORT -j ACCEPT
 
 # accept input to qBittorrent webui port
-iptables -A INPUT -i "${docker_interface}" -p tcp --dport 8080 -j ACCEPT
-iptables -A INPUT -i "${docker_interface}" -p tcp --sport 8080 -j ACCEPT
+iptables -A INPUT -i "${docker_interface}" -p tcp --dport 8081 -j ACCEPT
+iptables -A INPUT -i "${docker_interface}" -p tcp --sport 8081 -j ACCEPT
 
 # additional port list for scripts or container linking
 if [[ ! -z "${ADDITIONAL_PORTS}" ]]; then
@@ -158,13 +158,13 @@ iptables -A OUTPUT -o "${docker_interface}" -p $VPN_PROTOCOL --dport $VPN_PORT -
 # if iptable mangle is available (kernel module) then use mark
 if [[ $iptable_mangle_exit_code == 0 ]]; then
 	# accept output from qBittorrent webui port - used for external access
-	iptables -t mangle -A OUTPUT -p tcp --dport 8080 -j MARK --set-mark 1
-	iptables -t mangle -A OUTPUT -p tcp --sport 8080 -j MARK --set-mark 1
+	iptables -t mangle -A OUTPUT -p tcp --dport 8081 -j MARK --set-mark 1
+	iptables -t mangle -A OUTPUT -p tcp --sport 8081 -j MARK --set-mark 1
 fi
 
 # accept output from qBittorrent webui port - used for lan access
-iptables -A OUTPUT -o "${docker_interface}" -p tcp --dport 8080 -j ACCEPT
-iptables -A OUTPUT -o "${docker_interface}" -p tcp --sport 8080 -j ACCEPT
+iptables -A OUTPUT -o "${docker_interface}" -p tcp --dport 8081 -j ACCEPT
+iptables -A OUTPUT -o "${docker_interface}" -p tcp --sport 8081 -j ACCEPT
 
 # additional port list for scripts or container linking
 if [[ ! -z "${ADDITIONAL_PORTS}" ]]; then
